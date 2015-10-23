@@ -1,0 +1,107 @@
+
+body {
+  font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+  font-size: 100%;
+  width: 500px;
+  height: 500px;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+button:hover {
+  cursor: pointer
+}
+/************************************************************
+HEADER
+************************************************************/
+
+.header-list {
+  margin: 2%;
+}
+
+.header-list li {
+  display: inline-block;
+}
+
+.header {
+ font-size: 25px;
+ font-weight: bold;
+ margin: 0 0 0 1%;
+}
+
+.sub-header {
+  font-size: 10px;
+  font-style: italic;
+  font-weight: lighter;
+  text-align: right;
+}
+
+.user-picture {
+  width: 15%;
+}
+
+.user-info {
+  display: inline-block;
+  list-style: none;
+}
+
+.user-info .user-name {
+  color: red;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.api-username-configure {
+  /*color: blue;*/
+}
+
+.configure-text {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.amount-selection {
+  margin: auto 2%;
+  text-align: center;
+}
+
+/************************************************************
+LOGIN PAGE
+************************************************************/
+.login-page {
+  text-align: center;
+}
+
+.github-sign-in {
+  background: darkblue;
+  width: 100px;
+  height: 25px;
+  margin: auto;
+  color: white;
+  margin: auto
+}
+
+/************************************************************
+CONTIRBUTER DISPLAY
+************************************************************/
+.contirbuter {
+  margin: 1% 0;
+  /*border-top: 2px solid gray;*/
+  border-bottom: 2px solid gray;
+}
+
+.contirbuter > * {
+  display: inline-block;
+}
+
+.gift-amount-field {
+  width: 100px;
+  height: 30px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+

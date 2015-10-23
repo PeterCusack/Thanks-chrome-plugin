@@ -1,0 +1,50 @@
+<!doctype html>
+<!--
+ This page is shown when the extension button is clicked, because the
+ "browser_action" field in manifest.json contains the "default_popup" key with
+ value "popup.html".
+ -->
+<html>
+  <head>
+    <title>Thanks!</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script src="thirdParty/jquery-2.1.4.js"></script>
+    <script src="popup.js"></script>
+  </head>
+  <header>
+    <!-- <ul class="header-list"> -->
+      <!-- <li class="header">Thanks!</li> -->
+      <!-- <li class="sub-header">Online appreciation platform</li> -->
+    </ul>
+    <div class="userProfile">
+      <img src="" alt="User Github Picture" class="user-picture">
+      <ul class="user-info">
+        <li class="user-name"></li>
+        <li class="api-username github-username"></li>
+        <li class="api-username venmo-username"></li>
+        <li class="api-username twitter-username"></li>
+      </ul>      
+    </div>
+    
+  </header>
+  <hr>
+  <body>
+    <div class="reponame">
+      
+    </div>
+    <div class="amount-selection">
+      
+    </div>
+    <div class="contrib-holder">
+      
+    </div>
+
+    <div class="login-page">
+      <h2>Sign in with:</h2>
+      <button id="signin" class="github-sign-in">Github</button>
+    </div>
+
+    <div class="contributers-display"></div>
+  </body>
+</html>
+
