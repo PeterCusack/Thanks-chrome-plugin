@@ -8,7 +8,11 @@
 // Few notes
 // Application is currently based on Github as being the primarly Oauth method, so the user profile is populated with information mostly from github and the application will not lauch without a github authkey 
 
-
+var Helpers = {
+  add: function(a,b){
+    return a + b
+  }
+}
 
 var Model = {
   startup: function(key){
@@ -167,6 +171,17 @@ var Model = {
 
   },
 
+  checkContribs: function(contribsUserNamesArray){
+      $.ajax({
+        url: "http://localhost:3000/api/github/check-usernames",
+        type: "POST",
+        data: {usernamesArray: contribsUserNamesArray}
+    }).done(function(response){
+      debugger
+      response
+    })
+  },
+
   sendCurrentURL: function(currentURL){
     $.ajax({
       url: 'http://localhost:3000/repositories/contributors',
@@ -180,6 +195,22 @@ var Model = {
       debugger
       console.log("made it!")
     });
+  },
+
+  calcMoneyDisplay: function(amount, contribsCommitsArray, callback){
+    var totalCommitsAmount = contribsCommitsArray.reduce(Helpers.add, 0)
+    var returnArray = [] // this is going to be in format [amountOfMoney, amountOfMoney, amountOfMoney]
+    for (var i = 0; i < contribsCommitsArray.length; i++){
+      var percentage = contribsCommitsArray[i]/totalCommitsAmount
+      contribAmount = amount * percentage
+      returnArray[i] = contribAmount.toFixed(2)
+    }
+    callback(returnArray)
+    // run down of waht happens here
+    // Get list of contributions, find total amount of commits
+    // Each persons commits converted to precent of total commits and that precent is then taken as a percent of the total amount of money being given
+    // insert the resulting number into a array this array is ordered from first to last of how the contributers are displated 
+    // View function then cycles through this display and the contib objects and fills in the appropriate amount
   }
 
 }
@@ -187,13 +218,6 @@ var Model = {
 
 var View = {
 
-  calcMoneyDisplay: function(amount){
-    // Get amount
-    // Get list of contributions find total
-    // Each persons contributions converted to precent and that precent is then taken as a percent of the amount
-    // insert following percent into a array this array is ordered from first to last of how the contributers are displated 
-    // View function then cycles through this display and the contib objects and fills in the appropriate amount
-  },
 
   displayLogin: function(){
 
@@ -219,6 +243,14 @@ var View = {
     Model.getCurrentTabUrl(Model.getRepoContribs)
   },
 
+  fillInContribAmounts: function(contribeAmountsArray) {
+    var contributersInputHTMLObjects = $(".contirbuter .gift-amount-field")
+    for ( var i = 0; i < contribeAmountsArray.length; i++) {
+     contributersInputHTMLObjects[i].value = contribeAmountsArray[i]
+    }
+  },
+
+
   startListeners: function(){
   $('#signin').on('click', function(event){
       event.preventDefault();
@@ -239,10 +271,24 @@ var View = {
     debugger
   });
 
+  $(document).on('input', '.total-gift-amount', function(event){
+    event.preventDefault()
+    var commitsArray = []
+    $(".contirbuter h4").each( function(){ 
+      commitsArray.push(Number.parseInt($(this).html()))
+    });
+    Model.calcMoneyDisplay(
+    $(this).val(), // value of amount user wants to give
+    commitsArray, // contribs commits array
+    View.fillInContribAmounts // callback
+    ); 
+  })
+
   },
 
   displayRepoContribs: function(list){
     $('.amount-selection').append("<button class=\"amount-less\"> <- </button> <input type=\"text\" class=\"gift-amount-field total-gift-amount\" placeholder=\"$\"> <button class=\"amount-less\"> -> </button>")
+    var contribsUserNames = []
 
     if (list === false){
       $('.contributers-display').append("sorry this is not a searchable URL")
@@ -263,8 +309,10 @@ var View = {
             <input type=\"submit\" value=\"send\" class=\"send-gift\">\
           </div>"
           )
-        }
+        contribsUserNames.push(userName) // this is for the checkContribs call
+        }   
     }
+    Model.checkContribs(contribsUserNames)
   },
 }
 
