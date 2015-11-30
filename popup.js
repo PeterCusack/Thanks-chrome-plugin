@@ -197,6 +197,13 @@ var Model = {
     });
   },
 
+  getDonationAmounts_Github: function(){
+    var donationAmounts = []
+   $(".gift-amount-field").each( function(){ 
+     donationAmounts.push(($(this).val());
+   });
+  }.
+
   calcMoneyDisplay: function(amount, contribsCommitsArray, callback){
     var totalCommitsAmount = contribsCommitsArray.reduce(Helpers.add, 0)
     var returnArray = [] // this is going to be in format [amountOfMoney, amountOfMoney, amountOfMoney]
@@ -211,7 +218,7 @@ var Model = {
     // Each persons commits converted to precent of total commits and that precent is then taken as a percent of the total amount of money being given
     // insert the resulting number into a array this array is ordered from first to last of how the contributers are displated 
     // View function then cycles through this display and the contib objects and fills in the appropriate amount
-  }
+  },
 
 }
 
@@ -267,13 +274,24 @@ var View = {
     Model.apiAuthentication($(this).data('apiName'));
   });
 
+  $(document).on('click', ".github-send-all", function(event){
+    event.preventDefault();
+    $.ajax({
+      type: "POST",
+      url: "htts://localhost/payment",
+      data: {commitsArray: commitsArray, contribsUserNames: contribsUserNames}
+    }).done(function(response){
+      debugger
+    })
+  })
+
   $(document).on('click','.configured-api', function(event){
     debugger
   });
 
   $(document).on('input', '.total-gift-amount', function(event){
     event.preventDefault()
-    var commitsArray = []
+    commitsArray = []
     $(".contirbuter h4").each( function(){ 
       commitsArray.push(Number.parseInt($(this).html()))
     });
@@ -287,8 +305,8 @@ var View = {
   },
 
   displayRepoContribs: function(list){
-    $('.amount-selection').append("<button class=\"amount-less\"> <- </button> <input type=\"text\" class=\"gift-amount-field total-gift-amount\" placeholder=\"$\"> <button class=\"amount-less\"> -> </button>")
-    var contribsUserNames = []
+    $('.amount-selection').append("<button class=\"amount-less\"> <- </button> <input type=\"text\" class=\"gift-amount-field total-gift-amount\" placeholder=\"$\"> <button class=\"amount-less\"> -> </button> <button class=\"github-send-all\">Send</button>")
+    contribsUserNames = []
 
     if (list === false){
       $('.contributers-display').append("sorry this is not a searchable URL")
@@ -312,7 +330,8 @@ var View = {
         contribsUserNames.push(userName) // this is for the checkContribs call
         }   
     }
-    Model.checkContribs(contribsUserNames)
+    // Model.checkContribs(contribsUserNames)
+    // This is to load up the green check mark or red x next to a contributer to indicate weather they have signed up for Thanks!
   },
 }
 
@@ -320,8 +339,36 @@ var View = {
 document.addEventListener('DOMContentLoaded', function() {
   View.startListeners();
   Model.getUserKey("github", Model.startup)
+
+
+  // for developing offline
+  var userName1 = "Test1";
+  var userProfileUrl1 = "https://facebook.com";
+  var userContributions1 = 15;
+
+  var userName2 = "Test2";
+  var userProfileUrl2 = "https://twitter.com";
+  var userContributions2 = 34;
+   $('.contributers-display').append("\
+        <div class=\"contirbuter\">\
+          <a href=\" "+ userProfileUrl1 +" \">"+ userName1 +" </a>\
+          <h4>"+ userContributions1 +"</h4>\
+          <input type=\"text\" class=\"gift-amount-field\" size=\"10\" placeholder=\"$\">\
+          <input type=\"submit\" value=\"send\" class=\"send-gift\">\
+        </div>"
+        )
+   $('.contributers-display').append("\
+        <div class=\"contirbuter\">\
+          <a href=\" "+ userProfileUrl2 +" \">"+ userName2 +" </a>\
+          <h4>"+ userContributions2 +"</h4>\
+          <input type=\"text\" class=\"gift-amount-field\" size=\"10\" placeholder=\"$\">\
+          <input type=\"submit\" value=\"send\" class=\"send-gift\">\
+        </div>"
+        )
 });
 
+// TODO: 
+// - Fix index of undifined for tabs-query if user onyl has one tab open
 
 
 
