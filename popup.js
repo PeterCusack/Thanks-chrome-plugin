@@ -10,9 +10,9 @@
 
 var Helpers = {
   add: function(a,b){
-    return a + b
+    return a + b;
   }
-}
+};
 
 var Model = {
   startup: function(key){
@@ -27,22 +27,22 @@ var Model = {
 
   howToDisplayUserProfile: function(){
     chrome.storage.sync.get(["userData", "github"], function(result){
-      if (result.github_avatar_url){ 
-        View.displayUserProfile(result)
+      if (result.github_avatar_url){
+        View.displayUserProfile(result);
       } else {
-        Model.getUserData(result.github)
+        Model.getUserData(result.github);
       }
-    })
-  }, 
+    });
+  },
 
   getUserData: function(key){ // should be changed to github username not key
     $.ajax({
       url: "http://localhost:3000/users/" + key, // this needs to be github username rather than github auth key
       method: "GET",
     }).done(function(response){
-      Model.storeUserData(response)
-      View.displayUserProfile(response)
-    })
+      Model.storeUserData(response);
+      View.displayUserProfile(response);
+    });
   },
 
   getRepoContribs: function(repoURL){
@@ -51,7 +51,7 @@ var Model = {
       sendData = {
         repoURL: repoURL,
         userName: $(".user-name").text()
-      }
+      };
       $.ajax({
       url: 'http://localhost:3000/repositories/contributors',
       method: 'post',
@@ -61,10 +61,10 @@ var Model = {
         withCredentials: true
       }
       }).done(function(response){
-        View.displayRepoContribs(response)
+        View.displayRepoContribs(response);
       });
     } else {
-      View.displayRepoContribs(false)
+      View.displayRepoContribs(false);
     }
   },
 
@@ -81,14 +81,14 @@ var Model = {
   },
 
   storeUserToken: function(provider, token) {
-    var providerKeys = {}
-    providerKeys[provider] = token
+    var providerKeys = {};
+    providerKeys[provider] = token;
     debugger
     chrome.storage.sync.set({
       // how to store this dynamicylly by putting provider there?
       apiKeys: providerKeys
     }, function(){
-      console.log('stored ' + token + " for provider: " + provider)
+      console.log('stored ' + token + " for provider: " + provider);
     });
   },
 
@@ -96,8 +96,8 @@ var Model = {
     chrome.storage.sync.set({
       userData: userData
     }, function(){
-      callback ? callback() : undefined
-    })
+      callback ? callback() : undefined;
+    });
   },
 
   getUserProfileInfo: function(callback){
@@ -119,15 +119,15 @@ var Model = {
       url: "http://localhost:3000/users",
       data: github_info,
     }).done(function(response){
-      Model.storeUserToken("github", response["access_token"])
-      View.displayUserProfile(response)
-    })
+      Model.storeUserToken("github", response["access_token"]);
+      View.displayUserProfile(response);
+    });
   },
 
   apiAuthentication: function(apiProvider){
     var data = {
       provider: apiProvider
-    }
+    };
     $.ajax({
       type: "post",
       url: "http://localhost:3000/api/webflow",
@@ -139,9 +139,9 @@ var Model = {
       webFlowParams = {interactive: true, url: response["authURL"] };
       chrome.identity.launchWebAuthFlow(webFlowParams, function(redirectUrl){
         // redirectUrl should look something like redirectUrl = "https://ijgbdoboepecdhcicmgomglandeheifn.chromiumapp.org/?code=
-        var responseCodeArray = redirectUrl.match('[#\?].*') // make sure the api provided with a code
+        var responseCodeArray = redirectUrl.match('[#\?].*'); // make sure the api provided with a code
         if (responseCodeArray.length === 1){
-          var codeStr = responseCodeArray[0].split('=')[1]
+          var codeStr = responseCodeArray[0].split('=')[1];
           $.ajax({
             type: "post",
             url: "http://localhost:3000/api/"+response["name"]+"/code-for-token", // all apiProvider routes have same route name
@@ -150,24 +150,24 @@ var Model = {
             debugger
             // decide if we're creating a user or just adding an authkey 
             if (response.apiProvider === "github"){
-              Model.createNewUser(response)
+              Model.createNewUser(response);
             } else {
               $.ajax({
                 method: "PUT",
                 url: "http://localhost:3000/users/"+response,
                 data: response
               }).done(function(response){
-                Model.storeUserToken("github", response["access_token"])
-                View.displayUserProfile(response)
-              })
+                Model.storeUserToken("github", response["access_token"]);
+                View.displayUserProfile(response);
+              });
             }
-          })
+          });
         }
         else {
           alert('Something went wrong');
         }
       });
-    })
+    });
 
   },
 
@@ -178,8 +178,7 @@ var Model = {
         data: {usernamesArray: contribsUserNamesArray}
     }).done(function(response){
       debugger
-      response
-    })
+    });
   },
 
   sendCurrentURL: function(currentURL){
@@ -193,26 +192,26 @@ var Model = {
       }
     }).done(function(response){
       debugger
-      console.log("made it!")
+      console.log("made it!");
     });
   },
 
   getDonationAmounts_Github: function(){
-    var donationAmounts = []
-   $(".gift-amount-field").each( function(){ 
-     donationAmounts.push(($(this).val());
+    var donationAmounts = [];
+   $(".gift-amount-field").each( function(){
+     donationAmounts.push($(this).val());
    });
-  }.
+  },
 
   calcMoneyDisplay: function(amount, contribsCommitsArray, callback){
-    var totalCommitsAmount = contribsCommitsArray.reduce(Helpers.add, 0)
+    var totalCommitsAmount = contribsCommitsArray.reduce(Helpers.add, 0);
     var returnArray = [] // this is going to be in format [amountOfMoney, amountOfMoney, amountOfMoney]
     for (var i = 0; i < contribsCommitsArray.length; i++){
-      var percentage = contribsCommitsArray[i]/totalCommitsAmount
-      contribAmount = amount * percentage
-      returnArray[i] = contribAmount.toFixed(2)
+      var percentage = contribsCommitsArray[i]/totalCommitsAmount;
+      contribAmount = amount * percentage;
+      returnArray[i] = contribAmount.toFixed(2);
     }
-    callback(returnArray)
+    callback(returnArray);
     // run down of waht happens here
     // Get list of contributions, find total amount of commits
     // Each persons commits converted to precent of total commits and that precent is then taken as a percent of the total amount of money being given
@@ -220,7 +219,7 @@ var Model = {
     // View function then cycles through this display and the contib objects and fills in the appropriate amount
   },
 
-}
+};
 
 
 var View = {
@@ -235,25 +234,25 @@ var View = {
     $(".user-picture").attr("src", userData["github_avatar_url"]);
     $(".user-name").html("<h2>" + userData["github_username"] + "</h2>");
     var apiUsernames = [
-    [userData['twitterData'],"Twitter"], 
-    [userData['github_username'], "Github"], 
-    [userData['coinbase_name'], 'Coinbase']]
+    [userData['twitterData'],"Twitter"],
+    [userData['github_username'], "Github"],
+    [userData['coinbase_name'], 'Coinbase']];
 
     $(".api-username").each(function(index) {
       // All this does is cycle through api-username prebuilt list and go through apiUsernames and fills it in for the profile view
       if (apiUsernames[index][0] != null){
         $(this).html( apiUsernames[index][1] + ": <a href=\"#\" class=\"configured-api\" data-api-name=\""+ apiUsernames[index][1] + "\">"+apiUsernames[index][0]+"</a>");
       } else {
-        $(this).html( apiUsernames[index][1] + ": <a href=\"#\" class=\"configure-api\" data-api-name=\""+ apiUsernames[index][1] + "\">Configure</a>")
+        $(this).html( apiUsernames[index][1] + ": <a href=\"#\" class=\"configure-api\" data-api-name=\""+ apiUsernames[index][1] + "\">Configure</a>");
       }
     })
-    Model.getCurrentTabUrl(Model.getRepoContribs)
+    Model.getCurrentTabUrl(Model.getRepoContribs);
   },
 
   fillInContribAmounts: function(contribeAmountsArray) {
-    var contributersInputHTMLObjects = $(".contirbuter .gift-amount-field")
+    var contributersInputHTMLObjects = $(".contirbuter .gift-amount-field");
     for ( var i = 0; i < contribeAmountsArray.length; i++) {
-     contributersInputHTMLObjects[i].value = contribeAmountsArray[i]
+     contributersInputHTMLObjects[i].value = contribeAmountsArray[i];
     }
   },
 
@@ -262,7 +261,7 @@ var View = {
   $('#signin').on('click', function(event){
       event.preventDefault();
       Model.apiAuthentication("Github");
-    })
+    });
 
   $('.send-gift').on('click', function(event){
     event.preventDefault();
@@ -278,38 +277,38 @@ var View = {
     event.preventDefault();
     $.ajax({
       type: "POST",
-      url: "htts://localhost/payment",
+      url: "http://localhost:3000/payment",
       data: {commitsArray: commitsArray, contribsUserNames: contribsUserNames}
     }).done(function(response){
       debugger
     })
-  })
+  });
 
   $(document).on('click','.configured-api', function(event){
     debugger
   });
 
   $(document).on('input', '.total-gift-amount', function(event){
-    event.preventDefault()
-    commitsArray = []
+    event.preventDefault();
+    commitsArray = [];
     $(".contirbuter h4").each( function(){ 
-      commitsArray.push(Number.parseInt($(this).html()))
+      commitsArray.push(Number.parseInt($(this).html()));
     });
     Model.calcMoneyDisplay(
     $(this).val(), // value of amount user wants to give
     commitsArray, // contribs commits array
     View.fillInContribAmounts // callback
-    ); 
-  })
+    )
+  });
 
   },
 
   displayRepoContribs: function(list){
-    $('.amount-selection').append("<button class=\"amount-less\"> <- </button> <input type=\"text\" class=\"gift-amount-field total-gift-amount\" placeholder=\"$\"> <button class=\"amount-less\"> -> </button> <button class=\"github-send-all\">Send</button>")
-    contribsUserNames = []
+    $('.amount-selection').append("<button class=\"amount-less\"> <- </button> <input type=\"text\" class=\"gift-amount-field total-gift-amount\" placeholder=\"$\"> <button class=\"amount-less\"> -> </button> <button class=\"github-send-all\">Send</button>");
+    contribsUserNames = [];
 
     if (list === false){
-      $('.contributers-display').append("sorry this is not a searchable URL")
+      $('.contributers-display').append("sorry this is not a searchable URL");
     } else {
       for ( var i = 0; i < list.length; i++){
         var currentUser = i;
@@ -326,9 +325,9 @@ var View = {
             <input type=\"text\" class=\"gift-amount-field\" size=\"10\" placeholder=\"$\">\
             <input type=\"submit\" value=\"send\" class=\"send-gift\">\
           </div>"
-          )
-        contribsUserNames.push(userName) // this is for the checkContribs call
-        }   
+          );
+        contribsUserNames.push(userName); // this is for the checkContribs call
+        }
     }
     // Model.checkContribs(contribsUserNames)
     // This is to load up the green check mark or red x next to a contributer to indicate weather they have signed up for Thanks!
@@ -338,7 +337,7 @@ var View = {
 // chrome.browserAction.onClicked.addListener
 document.addEventListener('DOMContentLoaded', function() {
   View.startListeners();
-  Model.getUserKey("github", Model.startup)
+  Model.getUserKey("github", Model.startup);
 
 
   // for developing offline
@@ -364,7 +363,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <input type=\"text\" class=\"gift-amount-field\" size=\"10\" placeholder=\"$\">\
           <input type=\"submit\" value=\"send\" class=\"send-gift\">\
         </div>"
-        )
+        );
 });
 
 // TODO: 
