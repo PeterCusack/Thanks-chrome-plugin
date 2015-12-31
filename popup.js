@@ -205,13 +205,13 @@ var Model = {
 
   calcMoneyDisplay: function(amount, contribsCommitsArray, callback){
     var totalCommitsAmount = contribsCommitsArray.reduce(Helpers.add, 0);
-    var returnArray = [] // this is going to be in format [amountOfMoney, amountOfMoney, amountOfMoney]
+    userAmountsArray = [] // this is going to be in format [amountOfMoney, amountOfMoney, amountOfMoney]
     for (var i = 0; i < contribsCommitsArray.length; i++){
       var percentage = contribsCommitsArray[i]/totalCommitsAmount;
       contribAmount = amount * percentage;
-      returnArray[i] = contribAmount.toFixed(2);
+      userAmountsArray[i] = contribAmount.toFixed(2);
     }
-    callback(returnArray);
+    callback(userAmountsArray);
     // run down of waht happens here
     // Get list of contributions, find total amount of commits
     // Each persons commits converted to precent of total commits and that precent is then taken as a percent of the total amount of money being given
@@ -277,8 +277,8 @@ var View = {
     event.preventDefault();
     $.ajax({
       type: "POST",
-      url: "http://localhost:3000/payment",
-      data: {commitsArray: commitsArray, contribsUserNames: contribsUserNames}
+      url: "http://localhost:3000/payment/github-bitcoin",
+      data: {userPayoutArray: userAmountsArray, contribsUserNames: contribsUserNames}
     }).done(function(response){
       debugger
     })
@@ -290,6 +290,7 @@ var View = {
 
   $(document).on('input', '.total-gift-amount', function(event){
     event.preventDefault();
+    // purposly global for use in payment/github-bitcoin
     commitsArray = [];
     $(".contirbuter h4").each( function(){ 
       commitsArray.push(Number.parseInt($(this).html()));
@@ -305,8 +306,8 @@ var View = {
 
   displayRepoContribs: function(list){
     $('.amount-selection').append("<button class=\"amount-less\"> <- </button> <input type=\"text\" class=\"gift-amount-field total-gift-amount\" placeholder=\"$\"> <button class=\"amount-less\"> -> </button> <button class=\"github-send-all\">Send</button>");
+    // purposly global for use in payment/github-bitcoin
     contribsUserNames = [];
-
     if (list === false){
       $('.contributers-display').append("sorry this is not a searchable URL");
     } else {
@@ -334,40 +335,40 @@ var View = {
   },
 }
 
-// chrome.browserAction.onClicked.addListener
+
 document.addEventListener('DOMContentLoaded', function() {
   View.startListeners();
   Model.getUserKey("github", Model.startup);
 
 
   // for developing offline
-  var userName1 = "Test1";
-  var userProfileUrl1 = "https://facebook.com";
-  var userContributions1 = 15;
+  // var userName1 = "Test1";
+  // var userProfileUrl1 = "https://facebook.com";
+  // var userContributions1 = 15;
 
-  var userName2 = "Test2";
-  var userProfileUrl2 = "https://twitter.com";
-  var userContributions2 = 34;
-   $('.contributers-display').append("\
-        <div class=\"contirbuter\">\
-          <a href=\" "+ userProfileUrl1 +" \">"+ userName1 +" </a>\
-          <h4>"+ userContributions1 +"</h4>\
-          <input type=\"text\" class=\"gift-amount-field\" size=\"10\" placeholder=\"$\">\
-          <input type=\"submit\" value=\"send\" class=\"send-gift\">\
-        </div>"
-        )
-   $('.contributers-display').append("\
-        <div class=\"contirbuter\">\
-          <a href=\" "+ userProfileUrl2 +" \">"+ userName2 +" </a>\
-          <h4>"+ userContributions2 +"</h4>\
-          <input type=\"text\" class=\"gift-amount-field\" size=\"10\" placeholder=\"$\">\
-          <input type=\"submit\" value=\"send\" class=\"send-gift\">\
-        </div>"
-        );
+  // var userName2 = "Test2";
+  // var userProfileUrl2 = "https://twitter.com";
+  // var userContributions2 = 34;
+  //  $('.contributers-display').append("\
+  //       <div class=\"contirbuter\">\
+  //         <a href=\" "+ userProfileUrl1 +" \">"+ userName1 +" </a>\
+  //         <h4>"+ userContributions1 +"</h4>\
+  //         <input type=\"text\" class=\"gift-amount-field\" size=\"10\" placeholder=\"$\">\
+  //         <input type=\"submit\" value=\"send\" class=\"send-gift\">\
+  //       </div>"
+  //       )
+  //  $('.contributers-display').append("\
+  //       <div class=\"contirbuter\">\
+  //         <a href=\" "+ userProfileUrl2 +" \">"+ userName2 +" </a>\
+  //         <h4>"+ userContributions2 +"</h4>\
+  //         <input type=\"text\" class=\"gift-amount-field\" size=\"10\" placeholder=\"$\">\
+  //         <input type=\"submit\" value=\"send\" class=\"send-gift\">\
+  //       </div>"
+  //       );
 });
 
 // TODO: 
-// - Fix index of undifined for tabs-query if user onyl has one tab open
+// - Fix index of undifined for tabs-query if user onky has one tab open
 
 
 
